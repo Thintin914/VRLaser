@@ -7,6 +7,7 @@ public class Elevator : MonoBehaviour
     public Vector3 startPos, endPos;
     private bool toEndPos;
     private float elapsedTime, duration;
+    private AudioSource audioSource;
 
     private void Start()
     {
@@ -18,6 +19,7 @@ public class Elevator : MonoBehaviour
             endPos = new Vector3(float.Parse(extraSettings[4]), float.Parse(extraSettings[5]), float.Parse(extraSettings[6]));
             duration = SerializedClasses.GetDistance(startPos, endPos);
         }
+        audioSource = GetComponent<AudioSource>();
         enabled = false;
     }
 
@@ -26,6 +28,7 @@ public class Elevator : MonoBehaviour
         this.toEndPos = toEndPos;
         if (enabled == false)
         {
+            audioSource.Play();
             enabled = true;
         }
     }
@@ -51,6 +54,7 @@ public class Elevator : MonoBehaviour
                 elapsedTime = duration;
                 LaserInteraction.hasSceneUpdate = true;
                 enabled = false;
+                audioSource.Stop();
             }
         }
         else
@@ -63,6 +67,7 @@ public class Elevator : MonoBehaviour
                 elapsedTime = 0;
                 LaserInteraction.hasSceneUpdate = true;
                 enabled = false;
+                audioSource.Stop();
             }
         }
     }

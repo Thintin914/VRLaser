@@ -9,8 +9,9 @@ public class LaserInteraction : MonoBehaviour
     public static bool hasSceneUpdate;
     private string loadLevelName;
     [HideInInspector] public List<Laser.MainLaserData> mainLaserData;
-    public List<GameObject> triggeredObjects, possibleTriggerObjects;
+    [HideInInspector] public List<GameObject> triggeredObjects, possibleTriggerObjects;
     public LaserColorList laserColorList;
+    public AudioLibrary audioLibrary;
 
     private void LateUpdate()
     {
@@ -63,10 +64,10 @@ public class LaserInteraction : MonoBehaviour
             foreach (GameObject g in possibleTriggerObjects)
             {
                 if (!triggeredObjects.Contains(g))
-                {                                               // ----Why I Have Exception?----
-                    g.GetComponent<SceneObjectTag>().Trigger(); // Remember To Match The Names Of Both Caller And Receiver.
-                    triggeredObjects.Add(g);                    // And Reclick The Caller's Button After Changing The Receiver Name In Order To Re-register.
-                }                                               // Else You Would Encounter Exception.
+                {
+                    g.GetComponent<SceneObjectTag>().Trigger();
+                    triggeredObjects.Add(g);
+                }
             }
             for (int i = 0; i < triggeredObjects.Count; i++)
             {

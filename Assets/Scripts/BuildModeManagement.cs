@@ -28,6 +28,7 @@ public class BuildModeManagement : MonoBehaviour
     public event RequireExtraObjectInformationHidden HideInformationButtons;
     public GameObject extraInformationButtonPrefab, extraInformationUIPrefab, inputField, testPositionUIPrefab;
     public static bool isExtraInformationUIShowing;
+    public AudioLibrary audioLibrary;
 
     private void Start()
     {
@@ -386,8 +387,13 @@ public class BuildModeManagement : MonoBehaviour
 
     public void ToNextLevel(string level)
     {
-        PlayerPrefs.SetString("CurrentLevel", level);
-        LoadLevel(PlayerPrefs.GetString("CurrentLevel"));
+        AudioSource playerAudio = Camera.main.GetComponent<AudioSource>();
+        playerAudio.clip = audioLibrary.audioClips[1];
+        playerAudio.Play();
+        if (File.Exists(path + level + ".txt")) {
+            PlayerPrefs.SetString("CurrentLevel", level);
+            LoadLevel(PlayerPrefs.GetString("CurrentLevel"));
+        }
     }
     public void DeleteLasers(bool needDetrigger, bool needLaserDataDeleted)
     {

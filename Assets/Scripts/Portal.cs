@@ -24,4 +24,9 @@ public class Portal : MonoBehaviour
         linkedPortal = GameObject.FindGameObjectWithTag("GameManager").GetComponent<BuildModeManagement>().FindGameObjectWithSceneTag(linkedSceneTag);
         LaserInteraction.hasSceneUpdate = true;
     }
+
+    private void Update()
+    {
+        transform.Rotate(Vector3.right * Time.deltaTime * 20, Space.World);
+    }
 }

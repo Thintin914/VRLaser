@@ -6,6 +6,7 @@ public class Door1 : MonoBehaviour
 {
     public Transform door1Model, door2Model;
     public int openRate;
+    private AudioSource audioSource;
 
     private void Start()
     {
@@ -15,6 +16,7 @@ public class Door1 : MonoBehaviour
             GetComponent<SceneObjectTag>().sceneTag = extraSettings[0];
             openRate = int.Parse(extraSettings[1]);
         }
+        audioSource = GetComponent<AudioSource>();
     }
 
     public void OpenDoor()
@@ -28,6 +30,7 @@ public class Door1 : MonoBehaviour
 
     IEnumerator MoveDoor(bool isOpen)
     {
+        audioSource.Play();
         if (isOpen)
         {
             for (int i = 0; i < openRate; i++)

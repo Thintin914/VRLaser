@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Valve.VR;
-
 public class VRRightHand : MonoBehaviour
 {
     public SteamVR_Action_Boolean select;
@@ -18,8 +17,9 @@ public class VRRightHand : MonoBehaviour
     private Laser rotateLaser;
     public LaserInteraction laserInteraction;
     public enum HoldingObjectType { none, pickup, rotate};
-    [SerializeField]public HoldingObjectType holdingObjectInteraction = HoldingObjectType.none;
-
+    public HoldingObjectType holdingObjectInteraction = HoldingObjectType.none;
+    private AudioSource holdingObjectAudio;
+    public AudioLibrary audioLibrary;
 
     private void Awake()
     {
@@ -71,18 +71,24 @@ public class VRRightHand : MonoBehaviour
                 {
                     holdingObjectInteraction = HoldingObjectType.rotate;
                 }
+
                 if (holdingObjectInteraction != HoldingObjectType.none) {
                     if (holdingObjectInteraction == HoldingObjectType.pickup)
                     {
                         holdingObject = hit.transform.gameObject;
                         originalDistance = SerializedClasses.GetDistance(transform.position, linePosition);
                         holdingObject.layer = 10;
+                        holdingObjectAudio = holdingObject.GetComponent<AudioSource>();
+                        holdingObjectAudio.clip = audioLibrary.audioClips[2];
+                        holdingObjectAudio.Play();
                     }
                     else if (holdingObjectInteraction == HoldingObjectType.rotate)
                     {
                         holdingObject = hit.transform.gameObject;
                         rotateLaser = Instantiate(laserInteraction.laserPrefab).GetComponent<Laser>();
                         rotateLaser.SetLaser(LaserColorList.LaserType.NA, holdingObject, holdingObject.transform.forward, Laser.FindBestBound(holdingObject.transform, holdingObject.transform.forward, holdingObject.GetComponent<BoxCollider>().bounds.extents), 4, in laserInteraction);
+                        holdingObjectAudio = holdingObject.GetComponent<AudioSource>();
+                        holdingObjectAudio.clip = audioLibrary.audioClips[0];
                     }
                     if (holdingObject.GetComponent<Rigidbody>())
                     {
@@ -105,7 +111,8 @@ public class VRRightHand : MonoBehaviour
 
         if (holdingObject != null)
         {
-            if (holdingObjectInteraction == HoldingObjectType.pickup) {
+            if (holdingObjectInteraction == HoldingObjectType.pickup)
+            {
                 if (Physics.Raycast(ray.origin, ray.direction, out hit, maxRayDistance, ignoreBothMask))
                 {
                     newDistance = hit.distance;
@@ -127,14 +134,22 @@ public class VRRightHand : MonoBehaviour
                 {
                     LaserInteraction.hasSceneUpdate = true;
                     float delay = GetObjectFallTime(GetObjectHeight(holdingObject.GetComponent<BoxCollider>()));
-                    if (delay < 10)
+                    if (delay < 20)
+                    {
+                        holdingObject.layer = 0;
+                        holdingObject = null;
                         StartCoroutine(WaitLaserUpdate(delay));
+                    }
                     DropHoldingObject();
                 }
             }
             else if (holdingObjectInteraction == HoldingObjectType.rotate)
             {
                 holdingObject.transform.Rotate(Vector3.up * 30 * Time.deltaTime, Space.World);
+                if (holdingObjectAudio.isPlaying == false)
+                {
+                    holdingObjectAudio.Play();
+                }
                 rotateLaser.UpdateLaserDirection(holdingObject.transform.forward);
                 if (select.stateUp == true)
                 {
@@ -168,7 +183,11 @@ public class VRRightHand : MonoBehaviour
     IEnumerator WaitLaserUpdate(float delay)
     {
         yield return new WaitForSeconds(delay);
-        LaserInteraction.hasSceneUpdate = true;
+        if (holdingObjectAudio.isPlaying) {
+            holdingObjectAudio.clip = audioLibrary.audioClips[2];
+            holdingObjectAudio.Play();
+        }
+        DropHoldingObject();
     }
 
     public void PushHoldingObject()
@@ -196,5 +215,6 @@ public class VRRightHand : MonoBehaviour
         }
         holdingObjectInteraction = HoldingObjectType.none;
         rotateLaser = null;
+        LaserInteraction.hasSceneUpdate = true;
     }
 }

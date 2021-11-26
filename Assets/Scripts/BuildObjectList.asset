@@ -117,6 +117,14 @@ MonoBehaviour:
       value: 0
     - name: EndZ
       value: 0
+  - model: {fileID: 5586968771136947342, guid: 83a10f49352c844428d464cd8e6aaa9c, type: 3}
+    ID: 12
+    name: InstructionImage
+    defaultInformation: []
+  - model: {fileID: 3707288201947701967, guid: e501f55363bca8b4599f68e1000a060e, type: 3}
+    ID: 13
+    name: TrophyImage
+    defaultInformation: []
   pickableObjectList:
   - 2WayCube
   rotatableObjectList:
